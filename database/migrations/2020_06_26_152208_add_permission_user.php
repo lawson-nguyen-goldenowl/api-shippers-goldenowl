@@ -14,7 +14,7 @@ class AddPermissionUser extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('permission')->unsigned();
+            $table->integer('permission')->unsigned()->default(3);
             $table->foreign('permission')->references('id')->on('permission');
         });
     }

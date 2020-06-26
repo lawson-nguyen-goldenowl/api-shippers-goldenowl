@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Validator;
+use App\permission as Permission;
 class apiUser_Controller extends Controller
 {
     public $successStatus = 200;
@@ -70,6 +71,7 @@ class apiUser_Controller extends Controller
 
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
+        $input['permission'] = Permission::where('title','shipper')->first()->id;
         $user = User::create($input);
         $success['token'] = $user->createToken('MyApp')->accessToken;
         $success['userInfo'] = [
