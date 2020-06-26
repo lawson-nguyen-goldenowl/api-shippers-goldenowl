@@ -142,9 +142,6 @@ return [
             'required' => 'Trường mật khẩu không thể để trống',
             'min' => "Mật khẩu quá ngắn",
         ],
-        'c_password' => [
-            'same' => 'Mật khẩu xác nhận không trùng khớp'
-        ]
     ],
 
     /*
