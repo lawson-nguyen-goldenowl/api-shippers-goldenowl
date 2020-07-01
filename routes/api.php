@@ -28,5 +28,5 @@ Route::group(['middleware' => 'auth:api'], function() {
 });
 
 Route::namespace('api')->group(['middleware' => 'auth:api'],function () {
-    Route::post('/orders', 'orderControler@create');
+    Route::post('/orders', 'orderController@create');
 });
