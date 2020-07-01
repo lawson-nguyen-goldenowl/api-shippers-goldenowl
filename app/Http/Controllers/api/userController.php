@@ -9,7 +9,7 @@ use App\User;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\permission as Permission;
-class apiUser_Controller extends Controller
+class userController extends Controller
 {
     public $successStatus = 200;
 
