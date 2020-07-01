@@ -15,11 +15,12 @@ class orderController extends Controller
     public function create(Request $request)
     {
         $user = Auth::user();
-        if ($user->permission != Permission::where('title', 'admin')->get()->id) {
+        if ($user->permission != Permission::where('title', 'admin')->first()->id) {
             return response()->json([
                 'error' => 'Forbidden'
             ], 403);
         }
+
         $validator = Validator::make(
             $request->all(),
             [
