@@ -23,10 +23,7 @@ Route::namespace('api')->group(function () {
     Route::post('register', 'userController@register');
 });
 
-Route::group(['middleware' => 'auth:api'], function() {
-    Route::get('details', 'api\userController@details');
-});
-
-Route::namespace('api')->group(['middleware' => 'auth:api'],function () {
-    Route::post('/orders', 'orderController@create');
+Route::group(['middleware' => 'auth:api', 'namespace' => 'api'], function() {
+    Route::get('details', 'userController@details');
+    Route::post('orders', 'orderController@create');
 });
