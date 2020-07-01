@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\orders as Order;
 use Illuminate\Support\Facades\Auth;
+use Validator;
 
 class orderController extends Controller
 {
