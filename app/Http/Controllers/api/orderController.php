@@ -12,17 +12,20 @@ use App\permission as Permission;
 class orderController extends Controller
 {
     //
-    public function all(Request $request){
-
+    public function all()
+    {
+        $orders = Order::all();
+        return response()->json(
+            [
+                'success' => [
+                    'data' => $orders
+                ]
+            ],
+            200
+        );
     }
     public function create(Request $request)
     {
-        $user = Auth::user();
-        if ($user->permission != Permission::where('title', 'admin')->first()->id) {
-            return response()->json([
-                'error' => 'Forbidden'
-            ], 403);
-        }
         $validator = Validator::make(
             $request->all(),
             [
@@ -40,7 +43,6 @@ class orderController extends Controller
                 400
             );
         }
-
         $order = new Order;
         $order->name = $request->name;
         $order->weight = $request->weight;
