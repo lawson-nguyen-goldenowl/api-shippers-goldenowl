@@ -61,6 +61,36 @@ class orderController extends Controller
         ], 200);
     }
 
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'name' => 'required|unique:orders',
+                'weight' => 'required|numeric',
+                'recipientName' => 'required',
+                'recipientPhone' => 'required',
+            ]
+        );
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'error' => $validator->errors()
+                ],
+                400
+            );
+        }
+        $order = Order::find($id);
+        if (!$order) {
+            return response()->json([
+                'error' => "BAD REQUEST"
+            ], 400);
+        }
+        $order->update($request->all());
+
+        return response()->json(['success'],200);
+    }
+
     public function destroy($id)
     {
         $order = Order::find($id);
