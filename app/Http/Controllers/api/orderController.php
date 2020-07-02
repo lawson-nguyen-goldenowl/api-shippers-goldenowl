@@ -61,12 +61,12 @@ class orderController extends Controller
         ], 200);
     }
 
-    public function destroy(Request $request)
+    public function destroy($id)
     {
-        $order = Order::find($request->idOrder);
+        $order = Order::find($id);
         if (!$order) {
             return response()->json([
-                'error' => $request->all()
+                'error' => "BAD REQUEST"
             ], 400);
         }
         $order->delete();
