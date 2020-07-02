@@ -12,6 +12,9 @@ use App\permission as Permission;
 class orderController extends Controller
 {
     //
+    public function all(Request $request){
+
+    }
     public function create(Request $request)
     {
         $user = Auth::user();
