@@ -29,5 +29,6 @@ Route::group(['middleware' => 'auth:api', 'namespace' => 'api'], function() {
         Route::post('orders', 'orderController@create');
         Route::get('orders', 'orderController@all');
         Route::delete('orders/{order}', 'orderController@destroy');
+        Route::put('orders/{order}', 'orderController@update');
     });
 });
