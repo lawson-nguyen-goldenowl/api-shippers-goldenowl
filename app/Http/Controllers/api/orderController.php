@@ -75,7 +75,7 @@ class orderController extends Controller
         if ($validator->fails()) {
             return response()->json(
                 [
-                    'error' => $validator->errors()
+                    'error' => $request->all()
                 ],
                 400
             );
