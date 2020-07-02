@@ -63,7 +63,12 @@ class orderController extends Controller
 
     public function destroy(Request $request)
     {
-        $order = Order::findOrFail($request->idOrder);
+        $order = Order::find($request->idOrder);
+        if (!$order) {
+            return response()->json([
+                'error' => 'BAD REQUEST'
+            ], 400);
+        }
         $order->delete();
         return response()->json(['success'], 200);
     }
