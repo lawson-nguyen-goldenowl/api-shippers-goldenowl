@@ -24,8 +24,8 @@ class orderController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                'nameOrder' => 'required|unique:orders',
-                'weightOrder' => 'required|numeric',
+                'name' => 'required|unique:orders',
+                'weight' => 'required|numeric',
                 'recipientName' => 'required',
                 'recipientPhone' => 'required',
             ]
@@ -41,8 +41,8 @@ class orderController extends Controller
         }
 
         $order = new Order;
-        $order->name = $request->nameOrder;
-        $order->weight = $request->weightOrder;
+        $order->name = $request->name;
+        $order->weight = $request->weight;
         $order->recipientName = $request->recipientName;
         $order->recipientPhone = $request->recipientPhone;
         $saved = $order->save();
