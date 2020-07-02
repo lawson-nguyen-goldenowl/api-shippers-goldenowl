@@ -66,7 +66,7 @@ class orderController extends Controller
         $order = Order::find($request->idOrder);
         if (!$order) {
             return response()->json([
-                'error' => 'BAD REQUEST'
+                'error' => $request->all()
             ], 400);
         }
         $order->delete();
