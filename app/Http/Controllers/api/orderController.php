@@ -60,4 +60,11 @@ class orderController extends Controller
             ]
         ], 200);
     }
+
+    public function destroy(Request $request)
+    {
+        $order = Order::findOrFail($request->idOrder);
+        $order->delete();
+        return response()->json(['success'], 200);
+    }
 }

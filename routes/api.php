@@ -28,5 +28,6 @@ Route::group(['middleware' => 'auth:api', 'namespace' => 'api'], function() {
     Route::group(['middleware' => 'permission'], function () {
         Route::post('orders', 'orderController@create');
         Route::get('orders', 'orderController@all');
+        Route::delete('orders/{order}', 'orderController@destroy');
     });
 });
