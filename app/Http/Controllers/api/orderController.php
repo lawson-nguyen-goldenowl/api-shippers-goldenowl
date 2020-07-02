@@ -20,7 +20,6 @@ class orderController extends Controller
                 'error' => 'Forbidden'
             ], 403);
         }
-
         $validator = Validator::make(
             $request->all(),
             [
@@ -30,7 +29,6 @@ class orderController extends Controller
                 'recipientPhone' => 'required',
             ]
         );
-
         if ($validator->fails()) {
             return response()->json(
                 [

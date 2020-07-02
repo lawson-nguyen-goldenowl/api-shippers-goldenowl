@@ -128,22 +128,6 @@ return [
     | specify a specific custom language line for a given attribute rule.
     |
     */
-
-    'custom' => [
-        'name' => [
-            'required' => 'Chúng tôi cần biết tên của bạn',
-        ],
-        'email' => [
-            'required' => 'Chúng tôi cần biết địa chỉ mail của bạn',
-            'email' => 'Email không lợp lệ',
-            'unique' => 'Email này đã tồn tại',
-        ],
-        'password' => [
-            'required' => 'Trường mật khẩu không thể để trống',
-            'min' => "Mật khẩu quá ngắn",
-        ],
-    ],
-
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Attributes
