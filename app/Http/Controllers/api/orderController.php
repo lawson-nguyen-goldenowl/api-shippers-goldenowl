@@ -24,6 +24,17 @@ class orderController extends Controller
             200
         );
     }
+    public function show($id) {
+        $order = Order::find($id);
+        if (!$order) {
+            return response()->json([
+                'error' => "BAD REQUEST"
+            ], 400);
+        }
+        $order->delete();
+        return response()->json(['data' => $order], 200);
+    }
+
     public function create(Request $request)
     {
         $validator = Validator::make(
