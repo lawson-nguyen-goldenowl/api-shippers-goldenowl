@@ -34,9 +34,9 @@ class orderController extends Controller
             ], 400);
         }
         $order->status = statusOrder::find($order->status)->title;
-        $shipper = shipper::find($order->idShipper);
+        $shipper = $order->shipper;
         $shipper = [
-            'name' => $shipper->name,
+            'name' => $shipper->account->name,
             'id' => $shipper->id,
             'numberPlate' => $shipper->numberPlate,
         ];

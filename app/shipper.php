@@ -12,4 +12,8 @@ class shipper extends Model
     public function works() {
         return $this->hasMany('App\works', 'idShipper', 'id');
     }
+
+    public function account() {
+        return $this->hasOne('App\User', 'id', 'idUser');
+    }
 }
