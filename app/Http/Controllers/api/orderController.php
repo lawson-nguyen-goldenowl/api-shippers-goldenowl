@@ -8,6 +8,8 @@ use App\orders as Order;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\permission as Permission;
+use App\shipper;
+use App\statusOrder;
 
 class orderController extends Controller
 {
@@ -31,7 +33,15 @@ class orderController extends Controller
                 'error' => "BAD REQUEST"
             ], 400);
         }
-        $order->delete();
+        $order->status = statusOrder::find($order->status)->title;
+        $shipper = shipper::find($order->idShipper);
+        $shipper = [
+            'name' => $shipper->name,
+            'id' => $shipper->id,
+            'numberPlate' => $shipper->numberPlate,
+        ];
+        $order->shipper = $shipper;
+        unset($order['id'], $order['idShipper']);
         return response()->json(['data' => $order], 200);
     }
 
