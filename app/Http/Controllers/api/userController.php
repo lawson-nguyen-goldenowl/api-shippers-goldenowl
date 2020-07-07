@@ -93,7 +93,7 @@ class userController extends Controller
     public function details()
     {
         $user = Auth::user();
-
+        $user->permission = Permission::find($user->permission)->title;
         return response()->json(
             [
                 'success' => $user
