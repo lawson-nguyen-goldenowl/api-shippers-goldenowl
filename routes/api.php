@@ -27,7 +27,7 @@ Route::group(['middleware' => 'auth:api', 'namespace' => 'api'], function() {
     Route::get('details', 'userController@details');
     Route::group(['middleware' => ['auth:api','permission']], function () {
         Route::get('orders', 'orderController@all');
-        Route::get('orders/{order}', 'orderController@index');
+        Route::get('orders/{order}', 'orderController@show');
         Route::post('orders', 'orderController@create');
         Route::put('orders/{order}', 'orderController@update');
         Route::delete('orders/{order}', 'orderController@destroy');
