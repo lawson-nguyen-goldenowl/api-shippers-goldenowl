@@ -19,6 +19,7 @@ class CreateTableOrders extends Migration
             $table->float('weight');
             $table->string('recipientName');
             $table->string('recipientPhone');
+            $table->integer('status')->unsigned();
             $table->timestamps();
         });
     }
