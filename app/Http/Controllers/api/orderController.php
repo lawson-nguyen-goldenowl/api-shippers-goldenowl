@@ -34,6 +34,12 @@ class orderController extends Controller
             ], 400);
         }
         $order->status = statusOrder::find($order->status)->title;
+        $shipper = [
+            'id' => $order->shipper->id,
+            'name' => $order->shipper->name,
+            'numberPlate' => $order->shipper->numberPlate,
+        ];
+        $order->infoShipper = $shipper;
         unset($order['id'], $order['idShipper']);
         return response()->json(['data' => $order], 200);
     }
