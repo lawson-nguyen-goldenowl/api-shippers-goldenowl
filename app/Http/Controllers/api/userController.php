@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Http\Controllers\api\apiController;
 use Illuminate\Http\Request;
-
 use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\permission as Permission;
-class userController extends Controller
+class userController extends apiController
 {
-    public $successStatus = 200;
 
     /**
      * login api
@@ -27,16 +26,11 @@ class userController extends Controller
             ]
         )) {
             $user = Auth::user();
-            $success['token'] = $user->createToken('MyApp')->accessToken;
-            $success['userInfo'] = [
+            $data['token'] = $user->createToken('MyApp')->accessToken;
+            $data['userInfo'] = [
                 'name' => $user->name
             ];
-            return response()->json(
-                [
-                    'success' => $success,
-                ],
-                $this->successStatus
-            );
+            return $this->respond($data);
         }
         else {
             return response()->json(

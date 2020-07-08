@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Http\Controllers\api\apiController;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\orders as Order;

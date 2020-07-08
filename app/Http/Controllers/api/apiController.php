@@ -116,9 +116,14 @@ class apiController extends Controller
      *
      * @return mixed
      */
-    public function respond($data, $headers = [])
+    public function respond($data)
     {
-        return response()->json($data, $this->getStatusCode(), $headers);
+        $respond = [
+            'success' => [
+                'data' => $data
+            ]
+        ];
+        return response()->json($respond, $this->getStatusCode());
     }
 
     /**
