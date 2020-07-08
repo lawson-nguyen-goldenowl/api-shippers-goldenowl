@@ -70,7 +70,7 @@ class userController extends apiController
         $respond = [
             'success' => $success
         ];
-        $this->respond($respond);
+        return $this->respond($respond);
     }
 
     /**
