@@ -58,7 +58,7 @@ class userController extends apiController
                 'password' => 'required|min:6',
                 'c_password' => 'required|same:password',
                 'number_plate' => 'required|unique:shippers,numberPlate',
-                'places' => ['required', Rule::in(array_map('strval', $allPlaces))],
+                'places.*' => ['required', Rule::in(array_map('strval', $allPlaces))],
             ]
         );
 
