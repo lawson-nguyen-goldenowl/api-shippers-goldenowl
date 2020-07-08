@@ -16,7 +16,6 @@ class orderController extends Controller
     //
     public function all()
     {
-        $orders = Order::all();
         return response()->json(
             [
                 'success' => [
@@ -26,7 +25,8 @@ class orderController extends Controller
             200
         );
     }
-    public function show($id) {
+    public function show($id)
+    {
         $order = Order::find($id);
         if (!$order) {
             return response()->json([
@@ -101,7 +101,7 @@ class orderController extends Controller
         }
         $order->update($request->all());
 
-        return response()->json(['success'],200);
+        return response()->json(['success'], 200);
     }
 
     public function destroy($id)
