@@ -81,7 +81,7 @@ class userController extends apiController
     public function details()
     {
         $user = Auth::user();
-        $user->permission = Permission::find($user->permission)->title;
+        unset($user->id);
         return $this->respond($user);
     }
 }
