@@ -70,7 +70,12 @@ class userController extends apiController
 
         DB::beginTransaction();
         try {
-            $account = User::create($input);
+            $account = User::create([
+                'email' => $input['email'],
+                'name' => $input['name'],
+                'permission' => $input['permission'],
+                "password" => $input['password']
+            ]);
             $idShipper = Str::random(8);
             while (shipper::find($idShipper)) $idShipper = Str::random(8);
             $places = array();
@@ -79,7 +84,7 @@ class userController extends apiController
             };
             $account->shipper()->create([
                 'id' => $idShipper,
-                'numberPlate' => $input['number_plate'],
+                'numberPlate' => $input['number_plate']
             ])->works()->createMany($places);
             $success['token'] = $account->createToken('MyApp')->accessToken;
             $respond = [
@@ -88,7 +93,7 @@ class userController extends apiController
             return $this->respond($respond);
         } catch (\Exception $error) {
             DB::rollBack();
-            return $this->respondWithError($error);
+            return $this->respondServerError();
         };
     }
 
