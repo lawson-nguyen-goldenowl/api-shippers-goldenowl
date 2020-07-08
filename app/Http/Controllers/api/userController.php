@@ -51,15 +51,19 @@ class userController extends apiController
                 'email' => 'required|email|unique:users',
                 'password' => 'required|min:6',
                 'c_password' => 'required|same:password',
+                'number_plate' => 'required|unique:shippers,numberPlate',
+                'places' => 'required',
             ]
         );
 
         if ($validator->fails()) return $this->respondUnauthorized($validator->errors());
-
+        // Create new account
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
         $input['permission'] = Permission::where('title', 'shipper')->first()->id;
         $user = User::create($input);
+        // Create new shipper matching with the account
+        $user->shipper()->create([$input['number_plate']])->works()->saveMany($input['places']);
         $success['token'] = $user->createToken('MyApp')->accessToken;
         $respond = [
             'success' => $success
