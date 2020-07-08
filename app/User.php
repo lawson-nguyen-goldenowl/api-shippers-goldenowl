@@ -40,7 +40,7 @@ class User extends Authenticatable
     ];
 
     public function permission() {
-        return $this->hasOne('App\permission','id', 'permission');
+        return $this->hasOne('App\permission', 'id', 'permission');
     }
     public function shipper() {
         return $this->hasOne('App\shipper', 'idUser', 'id');

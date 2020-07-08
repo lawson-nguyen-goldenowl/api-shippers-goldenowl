@@ -62,7 +62,11 @@ class userController extends apiController
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
         $input['permission'] = Permission::where('title', 'shipper')->first()->id;
-        $user = User::create($input);
+        $user = new User;
+        foreach ($input as $key => $value) {
+            $user[$key] = $value;
+        };
+        $user->save();
         $success['token'] = $user->createToken('MyApp')->accessToken;
         $success['userInfo'] = [
             'name' => $user->name,
