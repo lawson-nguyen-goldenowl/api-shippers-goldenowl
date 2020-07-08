@@ -6,7 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
-
+use App\permission as Permission;
 
 class User extends Authenticatable
 {
@@ -38,6 +38,10 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function getPermissionAttribute($value) {
+        return Permission::find($value)->title;
+    }
 
     public function permission() {
         return $this->hasOne('App\permission', 'id', 'permission');
