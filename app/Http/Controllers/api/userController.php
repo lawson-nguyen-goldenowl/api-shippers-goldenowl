@@ -28,9 +28,6 @@ class userController extends apiController
         )) {
             $user = Auth::user();
             $data['token'] = $user->createToken('MyApp')->accessToken;
-            $data['userInfo'] = [
-                'name' => $user->name
-            ];
             $respond = [
                 'success' => $data
             ];
@@ -64,9 +61,6 @@ class userController extends apiController
         $input['permission'] = Permission::where('title', 'shipper')->first()->id;
         $user = User::create($input);
         $success['token'] = $user->createToken('MyApp')->accessToken;
-        $success['userInfo'] = [
-            'name' => $user->name,
-        ];
         $respond = [
             'success' => $success
         ];
