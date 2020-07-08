@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class shipper extends Model
 {
 
-    protected $fillable = ['numberPlate'];
+    protected $fillable = ['numberPlate', 'id'];
 
     protected $table = 'shippers';
     protected $keyType = 'string';
