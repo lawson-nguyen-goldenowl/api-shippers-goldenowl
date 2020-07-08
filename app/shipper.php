@@ -22,6 +22,6 @@ class shipper extends Model
     }
 
     public function account() {
-        return $this->hasOne('App\User', 'id', 'idUser');
+        return $this->belongsTo('App\User', 'id', 'idUser');
     }
 }

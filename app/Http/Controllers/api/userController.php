@@ -69,7 +69,9 @@ class userController extends apiController
         DB::beginTransaction();
         try {
             $account = User::create($input);
-            $account->shipper()->create($input)->works()->saveMany($input['places']);
+            $account->shipper()->create([
+                'numberPlate' => $input['number_plate'],
+            ])->works()->saveMany($input['places']);
             $success['token'] = $account->createToken('MyApp')->accessToken;
             $respond = [
                 'success' => $success
