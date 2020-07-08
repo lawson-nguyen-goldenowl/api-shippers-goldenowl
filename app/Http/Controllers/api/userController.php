@@ -9,6 +9,7 @@ use App\User;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\permission as Permission;
+
 class userController extends apiController
 {
 
@@ -34,8 +35,7 @@ class userController extends apiController
                 'success' => $data
             ];
             return $this->respond($respond);
-        }
-        else {
+        } else {
             return $this->respondUnauthorized();
         }
     }
@@ -47,7 +47,8 @@ class userController extends apiController
      */
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(),
+        $validator = Validator::make(
+            $request->all(),
             [
                 'name' => 'required',
                 'email' => 'required|email|unique:users',
@@ -56,27 +57,20 @@ class userController extends apiController
             ]
         );
 
-        if ($validator->fails()) {
-            return response()->json(
-                [
-                    'error' => $validator->errors()
-                ], 401);
-        }
+        if ($validator->fails()) return $this->respondUnauthorized($validator->errors);
 
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
-        $input['permission'] = Permission::where('title','shipper')->first()->id;
+        $input['permission'] = Permission::where('title', 'shipper')->first()->id;
         $user = User::create($input);
         $success['token'] = $user->createToken('MyApp')->accessToken;
         $success['userInfo'] = [
             'name' => $user->name,
         ];
-        return response()->json(
-            [
-                'success' => $success
-            ],
-            $this->successStatus
-        );
+        $respond = [
+            'success' => $success
+        ];
+        $this->respond($respond);
     }
 
     /**
@@ -88,11 +82,6 @@ class userController extends apiController
     {
         $user = Auth::user();
         $user->permission = Permission::find($user->permission)->title;
-        return response()->json(
-            [
-                'success' => $user
-            ],
-            $this->successStatus
-        );
+        return $this->respond($user);
     }
 }
