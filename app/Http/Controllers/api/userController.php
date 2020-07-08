@@ -64,6 +64,7 @@ class userController extends apiController
         $input['permission'] = Permission::where('title', 'shipper')->first()->id;
         $user = new User;
         foreach ($input as $key => $value) {
+            if ($key == 'c_password') continue;
             $user[$key] = $value;
         };
         $user->save();
