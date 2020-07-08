@@ -9,6 +9,9 @@ use App\User;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\permission as Permission;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+use App\places as Places;
 
 class userController extends apiController
 {
@@ -44,6 +47,7 @@ class userController extends apiController
      */
     public function register(Request $request)
     {
+        $allPlaces = Places::select('id')->get()->toArray();
         $validator = Validator::make(
             $request->all(),
             [
@@ -52,23 +56,29 @@ class userController extends apiController
                 'password' => 'required|min:6',
                 'c_password' => 'required|same:password',
                 'number_plate' => 'required|unique:shippers,numberPlate',
-                'places' => 'required',
+                'places' => ['required', Rule::in($allPlaces)],
             ]
         );
 
         if ($validator->fails()) return $this->respondUnauthorized($validator->errors());
-        // Create new account
+
         $input = $request->all();
-        $input['password'] = bcrypt($input['password']);
         $input['permission'] = Permission::where('title', 'shipper')->first()->id;
-        $user = User::create($input);
-        // Create new shipper matching with the account
-        $user->shipper()->create([$input['number_plate']])->works()->saveMany($input['places']);
-        $success['token'] = $user->createToken('MyApp')->accessToken;
-        $respond = [
-            'success' => $success
-        ];
-        return $this->respond($respond);
+        $input['password'] = bcrypt($input['password']);
+
+        DB::beginTransaction();
+        try {
+            $account = User::create($input);
+            $account->shipper()->create($input)->works()->saveMany($input['places']);
+            $success['token'] = $account->createToken('MyApp')->accessToken;
+            $respond = [
+                'success' => $success
+            ];
+            return $this->respond($respond);
+        } catch (\Exception $error) {
+            DB::rollBack();
+            return $this->respondWithError($error);
+        };
     }
 
     /**
