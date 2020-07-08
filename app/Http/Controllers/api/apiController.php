@@ -118,12 +118,7 @@ class apiController extends Controller
      */
     public function respond($data)
     {
-        $respond = [
-            'success' => [
-                'data' => $data
-            ]
-        ];
-        return response()->json($respond, $this->getStatusCode());
+        return response()->json($data, $this->getStatusCode());
     }
 
     /**

@@ -30,7 +30,10 @@ class userController extends apiController
             $data['userInfo'] = [
                 'name' => $user->name
             ];
-            return $this->respond($data);
+            $respond = [
+                'success' => $data
+            ];
+            return $this->respond($respond);
         }
         else {
             return $this->respondUnauthorized();
