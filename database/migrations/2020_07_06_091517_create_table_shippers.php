@@ -15,7 +15,7 @@ class CreateTableShippers extends Migration
     public function up()
     {
         Schema::create('shippers', function (Blueprint $table) {
-            $table->string('id',8)->unique();
+            $table->string('id',8)->default(Str::random(8))->unique();
             $table->integer('idUser')->unsigned();
             $table->string('numberPlate');
             $table->timestamps();
