@@ -57,7 +57,7 @@ class userController extends apiController
             ]
         );
 
-        if ($validator->fails()) return $this->respondUnauthorized($validator->errors);
+        if ($validator->fails()) return $this->respondUnauthorized($validator->errors());
 
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
