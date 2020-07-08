@@ -8,7 +8,6 @@ use App\orders as Order;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\permission as Permission;
-use App\shipper;
 use App\statusOrder;
 
 class orderController extends Controller

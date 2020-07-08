@@ -9,6 +9,6 @@ class orders extends Model
     protected $guarded = [];
 
     public function shipper() {
-        return $this->hasOne('App\shipper', 'id', 'idShipper');
+        return $this->belongsTo('App\shipper', 'id', 'idShipper');
     }
 }
