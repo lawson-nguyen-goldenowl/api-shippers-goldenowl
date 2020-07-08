@@ -12,6 +12,8 @@ use App\permission as Permission;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\places as Places;
+use App\shipper;
+use Illuminate\Support\Str;
 
 class userController extends apiController
 {
@@ -66,22 +68,28 @@ class userController extends apiController
         $input['permission'] = Permission::where('title', 'shipper')->first()->id;
         $input['password'] = bcrypt($input['password']);
 
-        DB::Transaction(function () use ($input) {
-            try {
-                $account = User::create($input);
-                $success['token'] = $account->createToken('MyApp')->accessToken;
-                $account->shipper()->create([
-                    'numberPlate' => $input['number_plate'],
-                ])->works()->saveMany($input['places']);
-                $respond = [
-                    'success' => $success
-                ];
-                return $this->respond($respond);
-            } catch (\Exception $error) {
-                DB::rollBack();
-                return $this->respondServerError($error);
+        DB::beginTransaction();
+        try {
+            $account = User::create($input);
+            $success['token'] = $account->createToken('MyApp')->accessToken;
+            $idShipper = Str::random(8);
+            while (shipper::find($idShipper)) $idShipper = Str::random(8);
+            $places = array();
+            foreach ($input['places'] as $key => $value) {
+                $places[] = ['idPlaces' => $value];
             };
-        });
+            $account->shipper()->create([
+                'id' => $idShipper,
+                'numberPlate' => $input['number_plate'],
+            ])->works()->createMany($places);
+            $respond = [
+                'success' => $success
+            ];
+            return $this->respond($respond);
+        } catch (\Exception $error) {
+            DB::rollBack();
+            return $this->respondWithError($error);
+        };
     }
 
     /**
