@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class shipper extends Model
 {
+
+    protected $fillable = ['numberPlate'];
+
     protected $table = 'shippers';
     protected $keyType = 'string';
 
