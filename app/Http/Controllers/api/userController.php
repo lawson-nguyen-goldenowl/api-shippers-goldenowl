@@ -70,13 +70,18 @@ class userController extends apiController
 
         DB::beginTransaction();
         try {
-            $account = App\User::create(['name' => 'asdds','email' => 'test3@gmail.com','permission' => 1,'password' => Hash::make("123456")]);
-            $success['token'] = $account->createToken('MyApp')->accessToken;
+            $account = User::create($input);
             $idShipper = Str::random(8);
             while (shipper::find($idShipper)) $idShipper = Str::random(8);
             $places = array();
-            foreach ($input['places'] as $key => $value) {$places[] = ['idPlaces' =>    $value];};
-            $account->shipper()->create(['id' => $idShipper,'numberPlate' => $input['number_plate']])->works()->createMany($places);
+            foreach ($input['places'] as $key => $value) {
+                $places[] = ['idPlaces' => $value];
+            };
+            $account->shipper()->create([
+                'id' => $idShipper,
+                'numberPlate' => $input['number_plate'],
+            ])->works()->createMany($places);
+            $success['token'] = $account->createToken('MyApp')->accessToken;
             $respond = [
                 'success' => $success
             ];
