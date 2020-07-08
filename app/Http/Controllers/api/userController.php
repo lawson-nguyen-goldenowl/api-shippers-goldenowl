@@ -47,7 +47,7 @@ class userController extends apiController
      */
     public function register(Request $request)
     {
-        $allPlaces = Places::select('id')->get()->toArray();
+        $allPlaces = Places::select('id')->get()->pluck('id')->toArray();
         $validator = Validator::make(
             $request->all(),
             [
@@ -56,7 +56,7 @@ class userController extends apiController
                 'password' => 'required|min:6',
                 'c_password' => 'required|same:password',
                 'number_plate' => 'required|unique:shippers,numberPlate',
-                'places' => ['required', Rule::in($allPlaces)],
+                'places' => ['required', Rule::in(array_map('strval', $allPlaces))],
             ]
         );
 
