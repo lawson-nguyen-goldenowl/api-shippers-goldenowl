@@ -33,10 +33,7 @@ class userController extends apiController
             return $this->respond($data);
         }
         else {
-            return response()->json(
-                [
-                    'error' => 'Unauthorised'
-                ], 401);
+            return $this->respondUnauthorized();
         }
     }
 
