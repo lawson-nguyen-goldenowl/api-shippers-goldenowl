@@ -54,10 +54,11 @@ class userController extends apiController
                 'password' => 'required|min:6',
                 'c_password' => 'required|same:password',
                 'number_plate' => 'required|unique:shippers,numberPlate',
+                'places' => 'required'
             ]
         );
 
-        if ($validator->fails()) return $this->respondUnauthorized($validator->errors());
+        if ($validator->fails()) return $this->respondBadRequest($validator->errors());
 
         $input = $request->all();
         $input['permission'] = Permission::where('title', 'shipper')->first()->id;
