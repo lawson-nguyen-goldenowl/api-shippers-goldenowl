@@ -16,7 +16,7 @@ class CheckPermission
      */
     public function handle($request, Closure $next)
     {
-        if ($request->user()->permission()->first()->title != 'admin') {
+        if ($request->user()->permission != 'admin') {
             return response()->json([
                 'error' => 'Forbidden'
             ],403);

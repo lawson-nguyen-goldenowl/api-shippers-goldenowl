@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\api\apiController;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\orders as Order;
 use Illuminate\Support\Facades\Auth;
@@ -11,19 +10,22 @@ use Validator;
 use App\permission as Permission;
 use App\statusOrder;
 
-class orderController extends Controller
+class orderController extends apiController
 {
     //
     public function all()
     {
-        return response()->json(
-            [
-                'success' => [
-                    'data' => $orders
-                ]
-            ],
-            200
-        );
+        $user = Auth::user();
+        $data = [];
+        if ($user->permission == 'shipper') {
+            $data = Order::where('idShipper', $user->shipper->id)->get();
+        }
+        if ($user->permission == 'admin') {
+            $data = Order::all();
+        }        
+
+        return $this->respond($data);
+
     }
     public function show($id)
     {
