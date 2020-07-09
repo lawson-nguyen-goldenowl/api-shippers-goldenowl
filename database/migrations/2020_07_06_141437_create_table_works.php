@@ -17,6 +17,8 @@ class CreateTableWorks extends Migration
             $table->string('idShipper');
             $table->integer('idPlaces')->unsigned();
             $table->timestamps();
+            $table->foreign('idShipper')->references('id')->on('shippers')->onDelete('cascade');
+            $table->foreign('idPlaces')->references('id')->on('places')->onDelete('cascade');
         });
     }
 

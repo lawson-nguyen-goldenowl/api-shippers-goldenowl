@@ -4,14 +4,11 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\api\apiController;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\permission as Permission;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
-use App\places as Places;
 use App\shipper;
 use Illuminate\Support\Str;
 
@@ -49,7 +46,6 @@ class userController extends apiController
      */
     public function register(Request $request)
     {
-        $allPlaces = Places::select('id')->get()->pluck('id')->toArray();
         $validator = Validator::make(
             $request->all(),
             [
@@ -58,7 +54,6 @@ class userController extends apiController
                 'password' => 'required|min:6',
                 'c_password' => 'required|same:password',
                 'number_plate' => 'required|unique:shippers,numberPlate',
-                'places.*' => ['required', Rule::in(array_map('strval', $allPlaces))],
             ]
         );
 
@@ -70,12 +65,7 @@ class userController extends apiController
 
         DB::beginTransaction();
         try {
-            $account = User::create([
-                'email' => $input['email'],
-                'name' => $input['name'],
-                'permission' => $input['permission'],
-                "password" => $input['password']
-            ]);
+            $account = User::create($input);
             $idShipper = Str::random(8);
             while (shipper::find($idShipper)) $idShipper = Str::random(8);
             $places = array();
@@ -86,15 +76,17 @@ class userController extends apiController
                 'id' => $idShipper,
                 'numberPlate' => $input['number_plate']
             ])->works()->createMany($places);
+            $account->save();
             $success['token'] = $account->createToken('MyApp')->accessToken;
             $respond = [
                 'success' => $success
             ];
+            DB::commit();
             return $this->respond($respond);
-        } catch (\Exception $error) {
-            DB::rollBack();
-            return $this->respondServerError();
-        };
+        } catch (\Exception $err) {
+            DB::rollback();
+            abort(500, $err);
+        }
     }
 
     /**
