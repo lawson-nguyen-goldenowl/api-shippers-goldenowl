@@ -99,6 +99,9 @@ class userController extends apiController
     {
         $user = Auth::user();
         unset($user->id);
-        return $this->respond($user);
+        $respond = [
+            'success' => $user
+        ];
+        return $this->respond($respond);
     }
 }
