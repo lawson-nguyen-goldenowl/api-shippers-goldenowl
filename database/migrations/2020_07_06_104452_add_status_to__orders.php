@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddPermissionUser extends Migration
+class AddStatusToOrders extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class AddPermissionUser extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->integer('permission')->unsigned()->default(3);
-            $table->foreign('permission')->references('id')->on('permission')->onDelete('cascade');
+        Schema::table('orders', function (Blueprint $table) {
+            $table->foreign('status')->references('id')->on('statusOrder');
         });
     }
 
@@ -26,7 +25,7 @@ class AddPermissionUser extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('orders', function (Blueprint $table) {
             //
         });
     }
