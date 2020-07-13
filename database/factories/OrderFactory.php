@@ -1,10 +1,8 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
 use App\statusOrder as Status;
 use App\orders as Orders;
 use Faker\Generator as Faker;
-use NunoMaduro\Collision\Adapters\Phpunit\State;
 
 $factory->define(Orders::class, function (Faker $faker) {
     $statusNew = Status::where('title', 'new')->first()->id;
