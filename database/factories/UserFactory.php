@@ -5,7 +5,7 @@ use App\permission as Permission;
 use App\User;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,9 +19,10 @@ use Illuminate\Support\Facades\Hash;
 */
 
 $factory->define(User::class, function (Faker $faker) {
+    $infoUser = getInfoUser();
     $permissionShipper = Permission::where('title', 'shipper')->first()->id;
     return [
-        'name' => $faker->name,
+        'name' => $infoUser['name'],
         'email' => $faker->unique()->safeEmail,
         'email_verified_at' => now(),
         'password' => bcrypt('123456'), // password
@@ -29,3 +30,12 @@ $factory->define(User::class, function (Faker $faker) {
         'permission' => $permissionShipper
     ];
 });
+
+function getInfoUser() {
+    $info = Http::get("https://api.namefake.com/vietnamese-vietnam")->json();
+    return [
+        'name' => $info['name'],
+        'address' => $info['address'],
+        'phone' => $info['phone_h']
+    ];
+}

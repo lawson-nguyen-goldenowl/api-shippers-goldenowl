@@ -15,8 +15,8 @@ class AlterTableOrders extends Migration
     {
         Schema::table('orders', function (Blueprint $table) {
             $table->string('recipientAddress');
-            $table->text('description');
-            $table->string('idShipper');
+            $table->text('description')->nullable();
+            $table->string('idShipper')->nullable();
             $table->foreign('idShipper')->references('id')->on('shippers');
         });
     }

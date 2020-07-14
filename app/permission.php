@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class permission extends Model
 {
-    protected $table = 'permission';
+    protected $table = 'permissions';
 
     public function user() {
         return $this->hasMany('App\User', 'permission', 'id');

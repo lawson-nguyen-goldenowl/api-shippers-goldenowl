@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class EditDefaultPermissionUsers extends Migration
+class AddIdSubDistrictToOrders extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class EditDefaultPermissionUsers extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->integer('permission')->unsigned()->change();
+        Schema::table('orders', function (Blueprint $table) {
+            $table->integer('idSubDistrict')->unsigned();
+            $table->foreign('idSubDistrict')->references('id')->on('subDistricts');
         });
     }
 
@@ -25,7 +26,7 @@ class EditDefaultPermissionUsers extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('orders', function (Blueprint $table) {
             //
         });
     }
