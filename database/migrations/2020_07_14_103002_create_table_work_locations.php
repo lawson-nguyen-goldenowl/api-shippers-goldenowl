@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTableWorks extends Migration
+class CreateTableWorkLocations extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,13 @@ class CreateTableWorks extends Migration
      */
     public function up()
     {
-        Schema::create('works', function (Blueprint $table) {
+        Schema::create('workLocations', function (Blueprint $table) {
+            $table->id();
             $table->string('idShipper');
-            $table->integer('idPlaces')->unsigned();
+            $table->integer('idDistrict')->unsigned();
             $table->timestamps();
             $table->foreign('idShipper')->references('id')->on('shippers')->onDelete('cascade');
-            $table->foreign('idPlaces')->references('id')->on('places')->onDelete('cascade');
+            $table->foreign('idDistrict')->references('id')->on('districts')->onDelete('cascade');
         });
     }
 
@@ -29,6 +30,6 @@ class CreateTableWorks extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('works');
+        Schema::dropIfExists('workLocations');
     }
 }

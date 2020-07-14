@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTablePermission extends Migration
+class CreateTableSubDistricts extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,12 @@ class CreateTablePermission extends Migration
      */
     public function up()
     {
-        Schema::create('permissions', function (Blueprint $table) {
+        Schema::create('subDistricts', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->string('name');
+            $table->integer('idDistrict')->unsigned();
             $table->timestamps();
+            $table->foreign('idDistrict')->references('id')->on('districts');
         });
     }
 
@@ -27,6 +29,6 @@ class CreateTablePermission extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('permissions');
+        Schema::dropIfExists('subDistricts');
     }
 }
