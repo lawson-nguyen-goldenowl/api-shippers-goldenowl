@@ -7,13 +7,12 @@ use Illuminate\Http\Request;
 use App\orders as Order;
 use Illuminate\Support\Facades\Auth;
 use Validator;
-use App\permission as Permission;
 use App\statusOrder;
 
 class orderController extends apiController
 {
     //
-    public function all()
+    public function all(Request $request)
     {
         $user = Auth::user();
         $data = [];
@@ -21,11 +20,24 @@ class orderController extends apiController
             $data = Order::where('idShipper', $user->shipper->id)->get();
         }
         if ($user->permission == 'admin') {
-            $data = Order::all();
-        }        
-
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'district' => 'integer'
+                ]
+            );
+            if ($validator->fails()) {
+                return response()->json(
+                    [
+                        'error' => $validator->errors()
+                    ],
+                    400
+                );
+            }
+            $data = Order::query()->district($request);
+        }
+        $data = $data->get();
         return $this->respond($data);
-
     }
     public function show($id)
     {
