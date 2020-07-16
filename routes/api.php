@@ -27,6 +27,8 @@ Route::namespace('api')->group(function () {
 Route::group(['middleware' => 'auth:api', 'namespace' => 'api'], function () {
     Route::get('details', 'userController@details');
     
+
+    Route::get('distributeOrders', 'orderController@distribute');
     Route::get('orders', 'orderController@all');
     Route::get('orders/{order}', 'orderController@show');
     Route::post('orders', 'orderController@create');

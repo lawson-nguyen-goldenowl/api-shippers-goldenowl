@@ -22,7 +22,7 @@ $factory->define(User::class, function (Faker $faker) {
     $infoUser = getInfoUser();
     $permissionShipper = Permission::where('title', 'shipper')->first()->id;
     return [
-        'name' => $infoUser['name'],
+        'name' => $faker->firstName(),
         'email' => $faker->unique()->safeEmail,
         'email_verified_at' => now(),
         'password' => bcrypt('123456'), // password

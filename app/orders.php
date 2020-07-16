@@ -18,4 +18,11 @@ class orders extends Model
         }
         return $query;
     }
+
+    public function scopeStatus( $query, $request ){
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        };
+        return $query;
+    }
 }

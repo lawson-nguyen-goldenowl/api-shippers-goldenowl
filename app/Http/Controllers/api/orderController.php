@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers\api;
 
+use App\districts;
 use App\Http\Controllers\api\apiController;
 use Illuminate\Http\Request;
 use App\orders as Order;
+use App\shipper;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\statusOrder;
+use App\Traits\Dijkstra;
+use Illuminate\Support\Facades\Http;
 
 class orderController extends apiController
 {
+    use Dijkstra;
     //
     public function all(Request $request)
     {
@@ -19,6 +24,7 @@ class orderController extends apiController
         if ($user->permission == 'shipper') {
             $data = Order::where('idShipper', $user->shipper->id)->get();
         }
+
         if ($user->permission == 'admin') {
             $validator = Validator::make(
                 $request->all(),
@@ -34,11 +40,15 @@ class orderController extends apiController
                     400
                 );
             }
-            $data = Order::query()->district($request);
+            $data = Order::query()->district($request)
+                                ->status($request);
         }
+
         $data = $data->get();
         return $this->respond($data);
     }
+
+
     public function show($id)
     {
         $order = Order::find($id);
@@ -128,5 +138,42 @@ class orderController extends apiController
         }
         $order->delete();
         return response()->json(['success'], 200);
+    }
+    
+    public function distribute(){
+        // return $shippers =  shipper::with(['works','orders'])->has('orders','<',1)->withCount('orders')->get();
+        $districts = districts::all();
+        $orders = Order::where('status', 1)->orderBy('idDistrict')->get();
+        // return $orderByDistrict = $orders->where('idDistrict', 1);
+        foreach ($districts as $district) {
+            $orderByDistrict = $orders->where('idDistrict', $district->id);
+
+        }
+    }
+
+    public function createMatrixDistance($orders) {
+        $locationKho = "10.7857313156128, 106.667335510254";
+        $matrix = array();
+        $length = count($orders);
+        for ($i=0; $i < $length; $i++) { 
+            for ($j=0; $j < $length; $j++) { 
+                if ($i == $j) {
+                    $matrix[$i][$i] = 0;
+                } else if ($matrix[$j][$i]) {
+                    $matrix[$i][$j] = $matrix[$j][$i];
+                }
+                $matrix[$i][$j] = $this->getDistance($orders[$i]->location,$orders[$j]->location);
+            }
+        }
+    }
+
+    public function getDistance($locationA, $locationB) {
+        $url = "https://rsapi.goong.io/DistanceMatrix?";
+        $origin = "origins=".$locationA;
+        $destination= "&destinations=".$locationB;
+        $apiKey = "&api_key=jaJ5xIhRGY2tfFxl17OP7rLmg878ZoyuyTjpfB5n";
+        $url .= $origin.$destination.$apiKey;
+        $respond = Http::get($url)->json();
+        return $respond['rows'][0]['elements'][0]['distance'];
     }
 }

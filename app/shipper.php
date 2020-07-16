@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class shipper extends Model
 {
@@ -18,10 +19,16 @@ class shipper extends Model
     }
 
     public function works() {
-        return $this->hasMany('App\works', 'idShipper', 'id');
+        return $this->hasMany('App\workLocations', 'idShipper', 'id');
     }
 
     public function account() {
         return $this->belongsTo('App\User', 'id', 'idUser');
+    }
+
+    public function scopeDistrict(Builder $query, $district){
+        return $query->whereHas('works', function ($q) use ($district) {
+            $q->where('idDistrict', $district);
+        });
     }
 }
