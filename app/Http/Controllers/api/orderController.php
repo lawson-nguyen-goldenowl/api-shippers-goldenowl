@@ -22,7 +22,7 @@ class orderController extends apiController
         $user = Auth::user();
         $data = [];
         if ($user->permission == 'shipper') {
-            $data = Order::where('idShipper', $user->shipper->id)->get();
+            $data = Order::where('idShipper', $user->shipper->id);
         }
 
         if ($user->permission == 'admin') {
@@ -41,7 +41,7 @@ class orderController extends apiController
                 );
             }
             $data = Order::query()->district($request)
-                                ->status($request);
+                ->status($request);
         }
 
         $data = $data->get();
@@ -139,40 +139,37 @@ class orderController extends apiController
         $order->delete();
         return response()->json(['success'], 200);
     }
-    
-    public function distribute(){
-        // return $shippers =  shipper::with(['works','orders'])->has('orders','<',1)->withCount('orders')->get();
-        $districts = districts::all();
-        $orders = Order::where('status', 1)->orderBy('idDistrict')->get();
-        // return $orderByDistrict = $orders->where('idDistrict', 1);
-        foreach ($districts as $district) {
-            $orderByDistrict = $orders->where('idDistrict', $district->id);
 
-        }
+    public function distribute_orders()
+    {
+        return $orders = Order::where('status', 1)->orderBy('idDistrict')->get();
+        $orders = sortOrders($orders);
     }
 
-    public function createMatrixDistance($orders) {
+    public function createMatrixDistance($orders)
+    {
         $locationKho = "10.7857313156128, 106.667335510254";
         $matrix = array();
         $length = count($orders);
-        for ($i=0; $i < $length; $i++) { 
-            for ($j=0; $j < $length; $j++) { 
+        for ($i = 0; $i < $length; $i++) {
+            for ($j = 0; $j < $length; $j++) {
                 if ($i == $j) {
                     $matrix[$i][$i] = 0;
                 } else if ($matrix[$j][$i]) {
                     $matrix[$i][$j] = $matrix[$j][$i];
                 }
-                $matrix[$i][$j] = $this->getDistance($orders[$i]->location,$orders[$j]->location);
+                $matrix[$i][$j] = $this->getDistance($orders[$i]->location, $orders[$j]->location);
             }
         }
     }
 
-    public function getDistance($locationA, $locationB) {
+    public function getDistance($locationA, $locationB)
+    {
         $url = "https://rsapi.goong.io/DistanceMatrix?";
-        $origin = "origins=".$locationA;
-        $destination= "&destinations=".$locationB;
+        $origin = "origins=" . $locationA;
+        $destination = "&destinations=" . $locationB;
         $apiKey = "&api_key=jaJ5xIhRGY2tfFxl17OP7rLmg878ZoyuyTjpfB5n";
-        $url .= $origin.$destination.$apiKey;
+        $url .= $origin . $destination . $apiKey;
         $respond = Http::get($url)->json();
         return $respond['rows'][0]['elements'][0]['distance'];
     }

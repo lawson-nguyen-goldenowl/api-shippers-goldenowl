@@ -29,10 +29,16 @@ Route::get('ordersnotdistributed', function () {
 });
 
 Route::get('shippersnotdistributed', function () {
+    return $shippers = App\shipper::with('works')->has('orders', '>', 0)->withCount('orders')->orderBy('orders_count')->first();
+
     $shippers = App\shipper::with('works')->has('orders', '>', 0)->withCount('orders')->orderBy('orders_count')->get();
     echo count($shippers);
     return $shippers;
 });
+
+Route::get('distribute_orders', 'api\orderController@distribute_orders');
+
+
 
 Route::get('distribute', function () {
     // Get orders and shippers

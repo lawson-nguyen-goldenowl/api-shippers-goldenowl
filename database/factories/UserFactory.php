@@ -19,7 +19,6 @@ use Illuminate\Support\Facades\Http;
 */
 
 $factory->define(User::class, function (Faker $faker) {
-    $infoUser = getInfoUser();
     $permissionShipper = Permission::where('title', 'shipper')->first()->id;
     return [
         'name' => $faker->firstName(),
@@ -30,12 +29,3 @@ $factory->define(User::class, function (Faker $faker) {
         'permission' => $permissionShipper
     ];
 });
-
-function getInfoUser() {
-    $info = Http::get("https://api.namefake.com/vietnamese-vietnam")->json();
-    return [
-        'name' => $info['name'],
-        'address' => $info['address'],
-        'phone' => $info['phone_h']
-    ];
-}

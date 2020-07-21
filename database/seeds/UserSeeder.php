@@ -11,7 +11,7 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\User::class, 20)->create()->each(function ($user) {
+        factory(App\User::class, 100)->create()->each(function ($user) {
             $shipper = $user->shipper()->save(factory(App\shipper::class)->make());
             App\districts::all()->random(rand(1,3))->each(function ($dstrict) use ($shipper) {
                 $work =  new App\workLocations();

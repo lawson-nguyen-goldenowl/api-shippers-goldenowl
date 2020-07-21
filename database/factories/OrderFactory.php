@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\Http;
 
 $factory->define(Orders::class, function (Faker $faker) {
     $statusNew = Status::where('title', 'new')->first()->id;
-    // $recipient = getInfoCustomer();
-    // $shipper = App\shipper::all()->random()->id;
     $generateAdd = generateLocationAroundCity();
     $district = App\districts::where('name','like' ,"%{$generateAdd['district']}%")->first();
     return [
@@ -24,17 +22,6 @@ $factory->define(Orders::class, function (Faker $faker) {
         'location' => $generateAdd['location'],
     ];
 });
-
-
-function getInfoCustomer()
-{
-    $info = Http::get("https://api.namefake.com/vietnamese-vietnam")->json();
-    return [
-        'name' => $info['name'],
-        'address' => $info['address'],
-        'phone' => $info['phone_h']
-    ];
-}
 
 function generateLocationAroundCity()
 {
