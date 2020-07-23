@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Http;
 $factory->define(Orders::class, function (Faker $faker) {
     $statusNew = Status::where('title', 'new')->first()->id;
     $generateAdd = generateLocationAroundCity();
-    $district = App\districts::where('name','like' ,"%{$generateAdd['district']}%")->first();
+    $district = App\districts::where('name', 'like', "%{$generateAdd['district']}%")->first();
     return [
         'name' => $faker->sentence(6, true),
         'weight' => $faker->randomFloat(),
@@ -25,22 +25,22 @@ $factory->define(Orders::class, function (Faker $faker) {
 
 function generateLocationAroundCity()
 {
-    $respond['formatted_address'] = '';
-    while (!$respond['formatted_address']) {
+    $respond = [];
+    while (empty($respond)) {
         $lng = '106.6' . rand(11111, 99999);
         $lat = '10.7' . rand(11111, 99999);
-        $latlng = $lat . ',' . $lng;
-        $url = "https://rsapi.goong.io/Geocode?latlng=" . $latlng . "&api_key=fmEgMPeCgZ6Ap7eiQm5C9dKTzlz2OyGIF4zg3cIy";
-        $respond = Http::get($url)->json()['results'][0];
+        $lnglat = $lng . ',' . $lat;
+        $token = "pk.eyJ1IjoibGF3c29ubmd1eWVuIiwiYSI6ImNrY29vZ3p0bTBkb2oycG9iaWR0Z3BmaWEifQ.vxBH2svrPtPPi4uXrbLheA";
+        $url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" . $lnglat . ".json?types=poi&access_token=". $token;
+        $res = Http::get($url)->json();
+        if ($res['features']) $respond = $res['features'][0];
     }
-    $fullAddress = $respond['name'] . ' ' . $respond['formatted_address'];
-    $address_component = $respond['address_components'];
-    $district = $address_component[count($address_component) - 2]['short_name'];
-    $location = $respond['geometry']['location']['lat'].','.$respond['geometry']['location']['lng'];
-    if (!$district) {
-        $address = str_replace(', Hồ Chí Minh', '', $respond['formatted_address']);
-        $district = trim(substr($address, strrpos($address, ',') + 1));
-    }
+
+    $fullAddress = $respond['place_name'];
+    $address_component = $respond['context'];
+    $district = $address_component[count($address_component) - 3]['text'];
+    $location = implode(',',$respond['geometry']['coordinates']);
+
     return [
         'fullAddress' => $fullAddress,
         'district' => $district,

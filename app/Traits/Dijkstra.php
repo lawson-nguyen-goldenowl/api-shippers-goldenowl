@@ -4,57 +4,53 @@ namespace App\Traits;
 
 trait Dijkstra
 {
-    public function findPath($graph_array, $source, $target)
+    public $INT_MAX = PHP_FLOAT_MAX;
+
+    public function MinimumDistance($distance, $shortestPathTreeSet, $verticesCount)
     {
-        $vertices = array();
-        $neighbours = array();
-        foreach ($graph_array as $edge) {
-            array_push($vertices, $edge[0], $edge[1]);
-            $neighbours[$edge[0]][] = array("end" => $edge[1], "cost" => $edge[2]);
-            $neighbours[$edge[1]][] = array("end" => $edge[0], "cost" => $edge[2]);
-        }
-        $vertices = array_unique($vertices);
+        $min = $this->INT_MAX;
+        $minIndex = 0;
 
-        foreach ($vertices as $vertex) {
-            $dist[$vertex] = INF;
-            $previous[$vertex] = NULL;
-        }
-
-        $dist[$source] = 0;
-        $Q = $vertices;
-        while (count($Q) > 0) {
-
-            // TODO - Find faster way to get minimum
-            $min = INF;
-            foreach ($Q as $vertex) {
-                if ($dist[$vertex] < $min) {
-                    $min = $dist[$vertex];
-                    $u = $vertex;
-                }
-            }
-
-            $Q = array_diff($Q, array($u));
-            if ($dist[$u] == INF or $u == $target) {
-                break;
-            }
-
-            if (isset($neighbours[$u])) {
-                foreach ($neighbours[$u] as $arr) {
-                    $alt = $dist[$u] + $arr["cost"];
-                    if ($alt < $dist[$arr["end"]]) {
-                        $dist[$arr["end"]] = $alt;
-                        $previous[$arr["end"]] = $u;
-                    }
-                }
+        for ($v = 0; $v < $verticesCount; ++$v) {
+            if ($shortestPathTreeSet[$v] == false && $distance[$v] <= $min) {
+                $min = $distance[$v];
+                $minIndex = $v;
             }
         }
-        $path = array();
-        $u = $target;
-        while (isset($previous[$u])) {
-            array_unshift($path, $u);
-            $u = $previous[$u];
+
+        return $minIndex;
+    }
+
+    public function PrintResult($distance, $verticesCount)
+    {
+        echo "<pre>" . "Vertex    Distance from source" . "</pre>";
+
+        for ($i = 0; $i < $verticesCount; ++$i)
+            echo "<pre>" . $i . "\t  " . $distance[$i] . "</pre>";
+    }
+
+    public function findShortestPath($graph, $source, $verticesCount)
+    {
+        $INT_MAX = $this->INT_MAX;
+        $distance = array();
+        $shortestPathTreeSet = array();
+
+        for ($i = 0; $i < $verticesCount; ++$i) {
+            $distance[$i] = $INT_MAX;
+            $shortestPathTreeSet[$i] = false;
         }
-        array_unshift($path, $u);
-        return $path;
+
+        $distance[$source] = 0;
+
+        for ($count = 0; $count < $verticesCount - 1; ++$count) {
+            $u = $this->MinimumDistance($distance, $shortestPathTreeSet, $verticesCount);
+            $shortestPathTreeSet[$u] = true;
+
+            for ($v = 0; $v < $verticesCount; ++$v)
+                if (!$shortestPathTreeSet[$v] && $graph[$u][$v] && $distance[$u] != $INT_MAX && $distance[$u] + $graph[$u][$v] < $distance[$v])
+                    $distance[$v] = $distance[$u] + $graph[$u][$v];
+        }
+
+        $this->PrintResult($distance, $verticesCount);
     }
 }

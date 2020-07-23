@@ -11,11 +11,12 @@ use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\statusOrder;
 use App\Traits\Dijkstra;
+use App\Traits\Mapbox;
 use Illuminate\Support\Facades\Http;
 
 class orderController extends apiController
 {
-    use Dijkstra;
+    use Mapbox;
     //
     public function all(Request $request)
     {
@@ -140,37 +141,88 @@ class orderController extends apiController
         return response()->json(['success'], 200);
     }
 
-    public function distribute_orders()
+    public function distribute()
     {
-        return $orders = Order::where('status', 1)->orderBy('idDistrict')->get();
-        $orders = sortOrders($orders);
+        $allOrders = Order::where('status', 1)->get();
+        $shippers = shipper::with('works')->withCount('orders')->has('orders', '<', 1)->get();
+        echo 'Number of orders : ' . count($allOrders) .'<br />';
+        $counter = 0;
+        
+        foreach ($shippers as $v => $shipper) {
+
+            echo '--------- Shipper :' . $shipper->id . '------  <br />';
+            echo '<br />';
+            echo 'List orders: <br/>';
+
+            $source = $this->getSource($shipper);
+            $collectOrders = $allOrders->whereIn('idDistrict', $shipper->work_locations);
+            $locationOrders = array_chunk($collectOrders->pluck('location')->toArray(), 24);
+            $coordinates = $source . implode(";", $locationOrders[0]);
+            $graph = $this->createGraph($coordinates);
+            $path = $this->findShortestPath($graph['distances']);
+            $collectOrders = array_values($collectOrders->toArray());
+            $idOrdersBeUpdate = [];
+            
+            foreach ($path as $index => $keyAllOrder) {
+                if ( $index == 0 ) continue;
+                $key = $keyAllOrder - 1;
+                $idOrdersBeUpdate[] = $collectOrders[$key]['id'];
+                echo $collectOrders[$key]['id'].' ';
+                $counter++;
+                $allOrders = $allOrders->where('id', '!=', $collectOrders[$key]['id']);
+                echo count($allOrders);
+                echo '<br/>';
+                if ($index == (5 - $shipper->orders_count)) break;
+            }
+
+            Order::whereIn('id', $idOrdersBeUpdate)->update([
+                'status' => 2,
+                'idShipper' => $shipper->id
+            ]);
+            if (count($allOrders) < 1) break;
+        }
+
+        echo 'Number of distributed orders : ' . $counter;
     }
 
-    public function createMatrixDistance($orders)
+    public function getSource($shipper)
     {
-        $locationKho = "10.7857313156128, 106.667335510254";
-        $matrix = array();
-        $length = count($orders);
-        for ($i = 0; $i < $length; $i++) {
-            for ($j = 0; $j < $length; $j++) {
-                if ($i == $j) {
-                    $matrix[$i][$i] = 0;
-                } else if ($matrix[$j][$i]) {
-                    $matrix[$i][$j] = $matrix[$j][$i];
-                }
-                $matrix[$i][$j] = $this->getDistance($orders[$i]->location, $orders[$j]->location);
+        $wareHouse = "106.6673794,10.7857855";
+        $source = $shipper['orders_count'] ? $shipper->orders->last()->location : $wareHouse;
+        return $source . ";";
+    }
+
+    public function createGraph($coordinates)
+    {
+        return $this->directMatrix($coordinates);
+    }
+
+    public function findShortestPath($graph)
+    {
+        $path = [0];
+        $pathLength = 1; // 1 
+        $graphLength = count($graph); // 4
+
+        while ($pathLength < $graphLength) {
+            $tempIndex = $path[$pathLength - 1]; // 0, 2
+            $tempArr = $graph[$tempIndex]; // [0 | 7778,7 | 6916 | 10295,8] , 
+            $minIndex = $this->findMinKey($tempArr, $path); // 2
+            $path[] = $minIndex; // [0, 2]
+            $pathLength++; // 2 
+        }
+        return $path;
+    }
+
+    public function findMinKey($arr, $exceptKeys)
+    {
+        $min = PHP_FLOAT_MAX;
+        $keyResult = null;
+        foreach ($arr as $key => $value) {
+            if ($value < $min && !in_array($key, $exceptKeys)) {
+                $min = $value;
+                $keyResult = $key;
             }
         }
-    }
-
-    public function getDistance($locationA, $locationB)
-    {
-        $url = "https://rsapi.goong.io/DistanceMatrix?";
-        $origin = "origins=" . $locationA;
-        $destination = "&destinations=" . $locationB;
-        $apiKey = "&api_key=jaJ5xIhRGY2tfFxl17OP7rLmg878ZoyuyTjpfB5n";
-        $url .= $origin . $destination . $apiKey;
-        $respond = Http::get($url)->json();
-        return $respond['rows'][0]['elements'][0]['distance'];
+        return $keyResult;
     }
 }

@@ -23,12 +23,16 @@ class shipper extends Model
     }
 
     public function account() {
-        return $this->belongsTo('App\User', 'id', 'idUser');
+        return $this->belongsTo('App\User', 'idUser', 'id');
     }
 
     public function scopeDistrict(Builder $query, $district){
         return $query->whereHas('works', function ($q) use ($district) {
             $q->where('idDistrict', $district);
         });
+    }
+
+    public function getWorkLocationsAttribute(){
+        return $this->works()->first()->pluck('id');
     }
 }
